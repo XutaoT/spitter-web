@@ -1,0 +1,21 @@
+<!DOCTYPE tiles-definitions PUBLIC
+        "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+        "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+    <definition name="template" template="/WEB-INF/views/main_template.jsp"><!--定义通用布局-->
+        <put-attribute name="top" value="/WEB-INF/views/spittleForm.jsp"/>
+        <put-attribute name="side" value="/WEB-INF/views/signinsignup.jsp"/>
+    </definition>
+
+    <definition name="home" extends="template"><!--定义home Tile-->
+        <put-attribute name="content" value="/WEB-INF/views/home.jsp"/>
+    </definition>
+
+    <definition name="spittles/list" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/spittles/list.jsp"/>
+    </definition>
+
+    <definition name="spitters/edit" extends="template">
+        <put-attribute name="content" value="/WEB-INF/views/spitters/edit.jsp"/>
+    </definition>
+</tiles-definitions>

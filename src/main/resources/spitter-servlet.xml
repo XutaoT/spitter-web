@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <mvc:resources mapping="/resources/**" location="/resources/"/><!--访问静态资源mapping-请求方式约定location-静态资源-->
+    <mvc:annotation-driven/><!--mvc 注解驱动特性，足够强大,处理请求，匹配对应的requstMapping-->
+    <context:component-scan base-package="com.xutao.spitter.mvc"/><!--扫描com.xutao.spitter.mvc包下@component注解的类，并将其注册为Bean-->
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"><!--此视图解析器，他将获取逻辑视图名称添加前缀和后缀，结果获得渲染输出jsp的路径 -->
+        <!--InternalResourceViewResolver，只会创建InternalResourceView，因为jsp文件中有jstl标签，所以这里使用JstlView，以支持jsdl标签-->
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/views/"/>
+        <property name="suffix" value=".jsp"/>
+        <!--InternalResourceViewResolver会将这个路径传递给view对象，view对象将请求传递（dispatch）给jsp-->
+    </bean>
+
+    <!--TilesViewResolver视图解析器会查找逻辑视图名称与Tiles定义的名称相同的Tiles模板定义-->
+    <bean class="org.springframework.web.servlet.view.tiles3.TilesViewResolver"/>
+
+   <!--TilesViewResolver不了解Tiles定义的任何事情，而是依靠TilesConfigurer来记录这个信息,TilesConfigure会加载一个或多个Tiles定义，TilesViewResolver通过它来解析视图-->
+    <bean class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+        <property name="definitions">
+            <list>
+                <!--查找/WEB-INF/views下所有目录的views.xml-->
+                <value>/WEB-INF/views/**/views.xml</value>
+            </list>
+        </property>
+    </bean>
+    <!-- DispatcherServlet本身不知道如何处理multipart的表单数据，所以需要multipart解析器把post请求的multipart数据
+    中抽取出来，这样DispatcherServlet就能将其传递给我们的控制器了
+    注意multipart解析器的Bean ID是有意义的，当DispatcherServlet查找multipart解析器时，他会查找ID为multipart的解析器Bean,如果
+    multipart解析器是其他ID，DispatcherServlet会忽略他 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="500000"/>
+    </bean>
+</beans>

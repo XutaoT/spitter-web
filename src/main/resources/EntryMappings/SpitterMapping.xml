@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.xutao.spitter.persistence.MyBatisDao.MybatisSpitterDao">
+
+    <insert id="addSpitterTable" parameterType="com.xutao.spitter.persistence.MyBatisDao.SpitterTable">
+        INSERT INTO spitter
+        (username,password,fullname,email,update_by_email)
+        VALUES (
+        #{username},
+        #{password},
+        #{fullname},
+        #{email},
+        #{update_by_email}
+        )
+    </insert>
+    
+    <update id="saveSpitterTable" parameterType="com.xutao.spitter.persistence.MyBatisDao.SpitterTable">
+        UPDATE spitter  SET
+            username = #{username},
+            password = #{password},
+            fullname = #{fullname},
+            email = #{email},
+            update_by_email = #{update_by_email}
+        WHERE id = #{id}
+    </update>
+
+    <select id="getSpitterTableById" parameterType="long" resultType="com.xutao.spitter.persistence.MyBatisDao.SpitterTable">
+        SELECT * FROM spitter WHERE id = #{id}
+    </select>
+
+    <select id="getSpitterTbaleByUsername" parameterType="string" resultType="com.xutao.spitter.persistence.MyBatisDao.SpitterTable">
+        SELECT * FROM spitter WHERE username = #{username}
+    </select>
+
+    <select id="findAllSpitterTables" resultType="com.xutao.spitter.persistence.MyBatisDao.SpitterTable">
+        SELECT * FROM spitter
+    </select>
+</mapper>

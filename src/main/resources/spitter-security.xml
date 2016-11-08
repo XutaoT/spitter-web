@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<b:beans xmlns:b="http://www.springframework.org/schema/beans"
+       xmlns ="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd"><!--此处xsd一定要写对，idea没法验证其正确性-->
+    <!--将auto-config设置为true
+    会为我们应用提供一个额外的登陆页、Http基本认证和退出功能等价于，如下-->
+    <!--- <http>
+           <form-login/>
+           <http-basic/>
+           <intercept-url pattern="/**" access="ROLE_SPITTER"/>
+       </http> -->
+    <!--<http auto-config="true">-->
+        <!--限制只有拥有ROLE_SPITTER角色的用户才能访问
+        http元素会自动创建一个FilterProxy，并委托给web.xmlDelegatingFilterProxy，以及链中
+        的所有过滤器Bean-->
+        <!--<intercept-url pattern="/**" access="hasRole('ROLE_SPITTER')"/>--><!--hasRole('ROLE_SPITTER')错误url会报404或重定向login，ROLE_SPITTER错误url回报500-->
+   <!-- </http>-->
+
+    <http auto-config="true" use-expressions="true"><!--use-expressions="true",指定可以使用SpEL表达式-->
+        <!--<intercept-url pattern="/**" access="hasRole('ROLE_SPITTER')"/> hasRole('ROLE_SPITTER')，如果当前用户给定了此权限，就会返回true-->
+        <!--/j_spring_security_check spring-security创建的用户认证请求,spring会自动创建和处理这个请求-->
+        <!--pattern默认是Ant格式，可以通过path-type来设置，如regex，使用正则表达式匹配-->
+        <!--requires-channel="https",此属性会把请求重定向为https-->
+        <intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN') and hasIpAddress('192.168.1.113')"/><!--这个拦截url应放在之前，否则会被更宽泛的url给拦截掉-->
+        <intercept-url pattern="/**" access="ROLE_SPITTER"/>
+        <form-login login-processing-url="/j_spring_security_check"
+                    login-page="/login"/>
+        <logout logout-url="/j_spring_security_logout"/>
+    </http>
+
+<!--
+此标签非常重要，因为http元素的会自动创建部分Bean,这些bean依赖部分bean，而这些bean是需要authentication-manager创建的
+Error creating bean with name 'org.springframework.security.filterChains': Cannot resolve reference to bean 'org.springframework.security.web.DefaultSecurityFilterChain#0' while setting bean property 'sourceList' with key [0]; nested exception is org.springframework.beans.factory.BeanCreationException:
+Error creating bean with name 'org.springframework.security.web.DefaultSecurityFilterChain#0': Cannot resolve reference to bean 'org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter#0' while setting constructor argument with key [5]; nested exception is org.springframework.beans.factory.BeanCreationException:
+Error creating bean with name 'org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter#0': Cannot resolve reference to bean 'org.springframework.security.authentication.ProviderManager#0' while setting bean property 'authenticationManager'; nested exception is org.springframework.beans.factory.BeanCreationException:
+Error creating bean with name 'org.springframework.security.authentication.ProviderManager#0': Cannot resolve reference to bean 'org.springframework.security.config.authentication.AuthenticationManagerFactoryBean#0' while setting constructor argument; nested exception is org.springframework.beans.factory.BeanCreationException:
+Error creating bean with name 'org.springframework.security.config.authentication.AuthenticationManagerFactoryBean#0': FactoryBean threw exception on object creation; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException:
+No bean named 'org.springframework.security.authenticationManager' is defined: Did you forget to add a gobal <authentication-manager> element to your configuration (with child <authentication-provider> elements)? Alternatively you can use the authentication-manager-ref attribute on your <http> and <global-method-security> elements.
+-->
+    <authentication-manager>
+        <authentication-provider>
+            <user-service>
+                <user name="xutao" password="123456" authorities="ROLE_SPITTER" />
+                <user name="xutao" password="12345678" authorities="ROLE_ADMIN"/>
+            </user-service>
+        </authentication-provider>
+    </authentication-manager>
+
+</b:beans>

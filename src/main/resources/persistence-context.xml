@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <util:properties id="jdbc" location="classpath:db.properties"/>
+    <!--数据库配置-->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="url" value="#{jdbc.url}"></property>
+        <property name="driverClassName" value="#{jdbc.driverClassName}"></property>
+        <property name="username" value="#{jdbc.username}"></property>
+        <property name="password" value="#{jdbc.password}"></property>
+    </bean>
+
+    <!--mybatis-spring的配置-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="mapperLocations" value="classpath:EntryMappings/*.xml"/>
+    </bean>
+
+    <!--mybatis配置-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.xutao.spitter.persistence.MyBatisDao"/>
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+        <property name="annotationClass" value="com.xutao.spitter.persistence.MyBatisDao.MyBatisRepository"/>
+    </bean>
+
+    <context:component-scan base-package="com.xutao.spitter.persistence.MyBatisDao"/>
+</beans>
